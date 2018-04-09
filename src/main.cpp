@@ -1,43 +1,27 @@
-#include <cstdint>
-#include "reg_access.h"
-#include "reg_map.h"
-#include "riscv.h"
+#include "Riscv.h"
 
 struct reg
 {
-    static constexpr uint64_t portb = 0x10021000U;
+    static constexpr uint64_t testAddr = 0x10021000U;
+    static constexpr uint64_t testAddr2 = 0x10021015U;
 };
 
 int main()
 {
-// mtvec
-	asm("la x10, end_label"); //asm("la x10, mtvec_handler+1");
-	asm("csrrw x0, mtvec, x10");
+    riscv::init();
 
-//============================================================
+    riscv::value(reg::testAddr) = 192;
 
-    reg_access<reg::portb,
-               32000U>::reg_set();
+    auto testVariable = riscv::value(reg::testAddr);
 
-    reg_access<reg::portb,
-               0x20U>::reg_or();
+    riscv::value(reg::testAddr) = 0;
+    riscv::bits(reg::testAddr).b2 = 1;
 
-    reg_map<reg::portb>::value() = 0U;
+    auto cycles = riscv::csr::readMcycle();
+    auto status = riscv::csr::readMstatus();
 
-    reg_map<reg::portb>::bits().b1 = 1;
-
-//============================================================
-    int bp = 1;
-
-    asm("end_label:");
-    asm("csrrs x9, mstatus, x0");//0x8000000a00007880
-    asm("csrrs x10, mcause, x0");//0x8000000000000007
-    asm("csrrs x11, mie, x0");//0x80
-    asm("csrrs x12, mip, x0");//0x80
-    asm("csrrs x13, mepc, x0");
-    asm("csrrs x14, mbadaddr, x0");//????
-
-    for(;;);
+    riscv::s5::write(0x1111111111111111);
+    auto x31 = riscv::t6::read();
 
     return 0;
 }
