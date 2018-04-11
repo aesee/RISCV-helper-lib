@@ -23,7 +23,16 @@ namespace riscv
             public:
                 static reg_type readMstatus();
                 static reg_type readMcycle();
+                static reg_type readMcause();
+                static reg_type readMie();
+                static reg_type readMip();
+                static reg_type readMepc();
+                static reg_type readMbadaddr();
+                static void setMtvec(reg_type value);
         };
+
+        //registers * saveContext();
+        //void restoreContext(registers & regs);
 
         class ra {public: static void write(reg_type value); static reg_type read(); };
         class sp {public: static void write(reg_type value); static reg_type read(); };
@@ -56,41 +65,6 @@ namespace riscv
         class t4 {public: static void write(reg_type value); static reg_type read(); };
         class t5 {public: static void write(reg_type value); static reg_type read(); };
         class t6 {public: static void write(reg_type value); static reg_type read(); };
-
-        // Not entirely sure
-        class registers
-        {
-            public:
-                static void
-                writeInX31(reg_type value)
-                {
-                    asm volatile (
-                        "mv x31, %[v]"
-
-                        : /* Outputs */
-                        : [v] "rK"(value) /* Inputs */
-                        : /* Clobbers */
-                    );
-                }
-
-                /*static void
-                write(int reg, reg_type value)
-                {
-                    asm volatile(
-                        "mv x[n], %[v]" : :[n] "i"(reg), [v] "rK"(value) :
-                    );
-                }*/
-
-                static reg_type
-                read(int reg)
-                {
-                    reg_type tmp;
-                    asm volatile(
-                        "mv %[res], %[inp]" : [res] "=r"(tmp) :[inp] "rK"(reg) :
-                    );
-                    return tmp;
-                }
-        };
 };
 
 

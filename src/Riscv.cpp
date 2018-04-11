@@ -35,14 +35,102 @@ void riscv::init()
 void riscv::trap()
 {
 	asm("end_label:");
-    asm("csrrs x9, mstatus, x0");//0x8000000a00007880
-    asm("csrrs x10, mcause, x0");//0x8000000000000007
-    asm("csrrs x11, mie, x0");//0x80
-    asm("csrrs x12, mip, x0");//0x80
-    asm("csrrs x13, mepc, x0");
-    asm("csrrs x14, mbadaddr, x0");
+    //asm("csrrs x9, mstatus, x0");//0x8000000a00007880
+    auto status = riscv::csr::readMstatus();
+    //asm("csrrs x10, mcause, x0");//0x8000000000000007
+    auto mcause = riscv::csr::readMcause();
+    //asm("csrrs x11, mie, x0");//0x80
+    auto mie = riscv::csr::readMie();
+    //asm("csrrs x12, mip, x0");//0x80
+    auto mip = riscv::csr::readMip();
+    //asm("csrrs x13, mepc, x0");
+    auto mepc = riscv::csr::readMepc();
+    //asm("csrrs x14, mbadaddr, x0");
+    auto badAddr = riscv::csr::readMbadaddr();
 
     for(;;);
+}
+
+void riscv::csr::setMtvec(reg_type value)
+{
+	asm volatile(
+    "csrw mtvec, %[v]" : :[v] "rK"(value) :
+    );
+}
+
+reg_type riscv::csr::readMbadaddr()
+{
+ 	reg_type tmp;
+
+	asm volatile (
+		"csrr %[r],mbadaddr"
+
+        : [r] "=r"(tmp) /* Outputs */
+        : /* Inputs */
+        : /* Clobbers */
+    	);
+
+    return tmp;
+}
+
+reg_type riscv::csr::readMepc()
+{
+ 	reg_type tmp;
+
+	asm volatile (
+		"csrr %[r],mepc"
+
+        : [r] "=r"(tmp) /* Outputs */
+        : /* Inputs */
+        : /* Clobbers */
+    	);
+
+    return tmp;
+}
+
+reg_type riscv::csr::readMip()
+{
+ 	reg_type tmp;
+
+	asm volatile (
+		"csrr %[r],mip"
+
+        : [r] "=r"(tmp) /* Outputs */
+        : /* Inputs */
+        : /* Clobbers */
+    	);
+
+    return tmp;
+}
+
+reg_type riscv::csr::readMie()
+{
+ 	reg_type tmp;
+
+	asm volatile (
+		"csrr %[r],mie"
+
+        : [r] "=r"(tmp) /* Outputs */
+        : /* Inputs */
+        : /* Clobbers */
+    	);
+
+    return tmp;
+}
+
+reg_type riscv::csr::readMcause()
+{
+ 	reg_type tmp;
+
+	asm volatile (
+		"csrr %[r],mcause"
+
+        : [r] "=r"(tmp) /* Outputs */
+        : /* Inputs */
+        : /* Clobbers */
+    	);
+
+    return tmp;
 }
 
 reg_type riscv::csr::readMstatus()
@@ -570,3 +658,77 @@ reg_type riscv::t6::read()
     );
     return tmp;
 }
+
+/*registers * riscv::saveContext()
+{
+    static registers regs;
+
+    regs.x1 = ra::read();
+    regs.x2 = sp::read();
+    regs.x3 = gp::read();
+    regs.x4 = tp::read();
+    regs.x5 = t0::read();
+    regs.x6 = t1::read();
+    regs.x7 = t2::read();
+    regs.x8 = s0::read();
+    regs.x9 = s1::read();
+    regs.x10 = a0::read();
+    regs.x11 = a1::read();
+    regs.x12 = a2::read();
+    regs.x13 = a3::read();
+    regs.x14 = a4::read();
+    regs.x15 = a5::read();
+    regs.x16 = a6::read();
+    regs.x17 = a7::read();
+    regs.x18 = s2::read();
+    regs.x19 = s3::read();
+    regs.x20 = s4::read();
+    regs.x21 = s5::read();
+    regs.x22 = s6::read();
+    regs.x23 = s7::read();
+    regs.x24 = s8::read();
+    regs.x25 = s9::read();
+    regs.x26 = s10::read();
+    regs.x27 = s11::read();
+    regs.x28 = t3::read();
+    regs.x29 = t4::read();
+    regs.x30 = t5::read();
+    regs.x31 = t6::read();
+
+    return &regs;
+}
+
+void riscv::restoreContext(registers & regs)
+{
+    //ra::write(regs.x1); 			// Can't write
+    //sp::write(regs.x2);
+    //gp::write(regs.x3);
+    //tp::write(regs.x4);
+    t0::write(regs.x5);
+    t1::write(regs.x6);
+    t2::write(regs.x7);
+    s0::write(regs.x8);
+    s1::write(regs.x9);
+    a1::write(regs.x11);
+    a2::write(regs.x12);
+    a3::write(regs.x13);
+    a4::write(regs.x14);
+    a5::write(regs.x15);
+    a6::write(regs.x16);
+    a7::write(regs.x17);
+    s2::write(regs.x18);
+    s3::write(regs.x19);
+    s4::write(regs.x20);
+    s5::write(regs.x21);
+    s6::write(regs.x22);
+    s7::write(regs.x23);
+    s8::write(regs.x24);
+    s9::write(regs.x25);
+    s10::write(regs.x26);
+    s11::write(regs.x27);
+    t3::write(regs.x28);
+    t4::write(regs.x29);
+    t5::write(regs.x30);
+    t6::write(regs.x31);
+    a0::write(regs.x10);
+}*/
