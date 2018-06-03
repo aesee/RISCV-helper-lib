@@ -8,12 +8,9 @@ typedef bit64_type bits_type;
 
 namespace riscv
 {
-        //reg_type& value(const addr_type addr);
-		double& value(const addr_type addr);
+        reg_type& value(const addr_type addr);
+		double& dValue(const addr_type addr);
         bits_type& bits(const addr_type addr);
-
-        void reg_set(const addr_type addr, addr_type val);
-        void reg_or(const addr_type addr, addr_type val);
 
         void init();
         void trap();

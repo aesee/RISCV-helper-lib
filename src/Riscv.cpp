@@ -1,10 +1,14 @@
 #include "Riscv.h"
 
-//reg_type& riscv::value(const addr_type addr)
-double& riscv::value(const addr_type addr)
+reg_type& riscv::value(const addr_type addr)
 {
 	return
-     //*reinterpret_cast<reg_type*>(addr);
+     *reinterpret_cast<reg_type*>(addr);
+}
+
+double& riscv::dValue(const addr_type addr)
+{
+	return
 	 *reinterpret_cast<double*>(addr);
 }
 
@@ -12,16 +16,6 @@ bits_type& riscv::bits(const addr_type addr)
 {
     return
      *reinterpret_cast<bits_type*>(addr);
-}
-
-void riscv::reg_set(const addr_type addr, addr_type val)
-{
-	*reinterpret_cast<volatile reg_type*>(addr) = val;
-}
-
-void riscv::reg_or(const addr_type addr, addr_type val)
-{
-	*reinterpret_cast<volatile reg_type*>(addr) |= val;
 }
 
 void riscv::init()

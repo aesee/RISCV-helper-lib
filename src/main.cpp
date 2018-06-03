@@ -16,7 +16,7 @@ int main()
 
     testReadWrite();
 
-    testContext();
+    //testContext();
 
     return 0;
 }
